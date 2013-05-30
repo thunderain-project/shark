@@ -35,7 +35,7 @@ import org.apache.hadoop.hive.ql.parse._
 import org.apache.hadoop.hive.ql.plan._
 import org.apache.hadoop.hive.ql.session.SessionState
 
-import shark.{CachedTableRecovery, LogHelper, SharkConfVars, SharkEnv, Utils}
+import shark.{CachedTableRecovery, LogHelper, QueryPlanRecorder, SharkConfVars, SharkEnv, Utils}
 import shark.execution.{HiveOperator, Operator, OperatorFactory, ReduceSinkOperator, SparkWork,
   TerminalOperator}
 import shark.memstore2.{CacheType, ColumnarSerDe, MemoryMetadataManager}
@@ -232,7 +232,7 @@ class SharkSemanticAnalyzer(conf: HiveConf) extends SemanticAnalyzer(conf) with 
         hiveSinkOps.map(OperatorFactory.createSharkFileOutputPlan(_))
       }
     }
-
+    terminalOpSeq.foreach(QueryPlanRecorder.recordQueryPlan(_))
     SharkSemanticAnalyzer.breakHivePlanByStages(terminalOpSeq)
     genMapRedTasks(qb, pctx, terminalOpSeq)
 
