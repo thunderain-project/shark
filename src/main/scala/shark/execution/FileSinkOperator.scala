@@ -27,7 +27,7 @@ import org.apache.hadoop.hive.ql.exec.JobCloseFeedBack
 import org.apache.hadoop.mapred.TaskID
 import org.apache.hadoop.mapred.TaskAttemptID
 import org.apache.hadoop.mapred.HadoopWriter
-
+import shark.{SharkEnv, QueryPlanRecorder}
 import shark.execution.serialization.OperatorSerializationWrapper
 
 import spark.RDD
@@ -116,6 +116,7 @@ class FileSinkOperator extends TerminalOperator with Serializable {
   }
 
   override def execute(): RDD[_] = {
+    SharkEnv.sc.addLocalProperties("spark.job.annotation", QueryPlanRecorder.getQueryPlan)
     val inputRdd = if (parentOperators.size == 1) executeParents().head._2 else null
     val rdd = preprocessRdd(inputRdd)
 

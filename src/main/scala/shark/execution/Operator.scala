@@ -207,7 +207,7 @@ object Operator extends LogHelper {
    */
   def executeProcessPartition(operator: Operator[_ <: HiveOperator], rdd: RDD[_]): RDD[_] = {
     val op = OperatorSerializationWrapper(operator)
-    rdd.mapPartitionsWithIndex { case(split, partition) =>
+    val newRdd = rdd.mapPartitionsWithIndex { case(split, partition) =>
       op.logDebug("Started executing mapPartitions for operator: " + op)
       op.logDebug("Input object inspectors: " + op.objectInspectors)
 
@@ -217,6 +217,8 @@ object Operator extends LogHelper {
 
       newPart
     }
+    newRdd.setGenerator(operator.toString.split("@",2)(0))
+    newRdd
   }
 
 }

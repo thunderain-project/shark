@@ -24,7 +24,7 @@ import scala.reflect.BeanProperty
 
 import org.apache.hadoop.io.Writable
 
-import shark.{SharkConfVars, SharkEnv, SharkEnvSlave, Utils}
+import shark.{QueryPlanRecorder, SharkConfVars, SharkEnv, SharkEnvSlave, Utils}
 import shark.execution.serialization.{OperatorSerializationWrapper, JavaSerializer}
 import shark.memstore2._
 import shark.tachyon.TachyonTableWriter
@@ -122,8 +122,8 @@ class MemoryStoreSinkOperator extends TerminalOperator {
 
       // Force evaluate so the data gets put into Spark block manager.
       rdd.persist(storageLevel)
+      SharkEnv.sc.addLocalProperties("spark.job.annotation", QueryPlanRecorder.getQueryPlan)
       rdd.foreach(_ => Unit)
-
       if (useUnionRDD) {
         rdd = rdd.union(
           SharkEnv.memoryMetadataManager.get(tableName).get.asInstanceOf[RDD[TablePartition]])
