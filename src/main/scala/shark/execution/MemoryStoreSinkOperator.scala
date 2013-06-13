@@ -109,6 +109,7 @@ class MemoryStoreSinkOperator extends TerminalOperator {
         Iterator(partition)
       }
       // Force evaluate so the data gets put into Tachyon.
+      SharkEnv.sc.addLocalProperties("spark.job.annotation", QueryPlanRecorder.getQueryPlan)
       rdd.foreach(_ => Unit)
     } else {
       // Put the table in Spark block manager.
