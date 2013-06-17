@@ -33,7 +33,7 @@ object SharkBuild extends Build {
   val HADOOP_VERSION = "1.0.4"
 
   // Whether to build Shark with Tachyon jar.
-  val TACHYON_ENABLED = false
+  val TACHYON_ENABLED = true
 
   lazy val root = Project(
     id = "root",
